@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 class form extends Component {
     constructor(props) {
         super(props);
+        this.componentDidMount()
         this.state = {
             txtImage:'',
             txtName:'',
@@ -15,7 +16,7 @@ class form extends Component {
         }
     }
 
-    componentWillMount = () =>{
+    componentDidMount = () =>{
         let list =[];
         let string = localStorage.getItem("listProduct");
         if(string === null || JSON.parse(string).length ===0 ){

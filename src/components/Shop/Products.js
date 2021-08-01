@@ -6,8 +6,10 @@ import ListProduct from '../Json/ListProduct.json'
 class products extends Component {
     constructor(props) {
         super(props);
+        this.componentDidMount()
         this.state = {
-            txtSearch:''
+            txtSearch:'',
+            userData:[]
         }
     }
 
@@ -15,7 +17,21 @@ class products extends Component {
         return price.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
     }
 
-    
+    componentDidMount = () =>{
+        let list =[];
+        let string = localStorage.getItem("listProduct");
+        if(string === null || JSON.parse(string).length ===0 ){
+            list = ListProduct
+            localStorage.setItem("listProduct",JSON.stringify(ListProduct))
+        }else{
+            list = JSON.parse(string)
+        }
+
+		this.setState({
+            userData :list
+        });
+	};
+
     changeInput = (event) => {
         const target = event.target;
         const name = target.name;
@@ -27,20 +43,10 @@ class products extends Component {
     }
 
     displayProductsDetail = () => {
-        let list =[];
-        let string = localStorage.getItem("listProduct");
-        if(string === null || JSON.parse(string).length ===0 ){
-            list = ListProduct
-            localStorage.setItem("listProduct",JSON.stringify(ListProduct))
-        }else{
-            list = JSON.parse(string)
-        }
-
-
         return (
             <div className="row">
                 {
-                    list.map((val, key) => {
+                    this.state.userData.map((val, key) => {
                         return <SanPham price={this.format_curency(val.price)} pid={val.id} key={key} name={val.name} image={val.image}  >
                             {val.name}
                         </SanPham>
@@ -50,12 +56,26 @@ class products extends Component {
         )
     }
 
-    isChange = (event) => {
-        console.log(event.target.value);
+    searchProduct = () =>{
+        var string = this.state.txtSearch.toLowerCase();
+        var list = this.state.userData;
+        var listSearch=[];
+        console.log();
+        for(var i=0; i<list.length ;i++){
+            if(list[i].name.toLowerCase().includes(string)){
+                listSearch.push(list[i])
+            }
+        }
+        this.setState({
+            userData :listSearch
+        });
     }
 
-    searchProduct = () =>{
-        console.log("Tìm kiếm sản phẩm: " +this.state.txtSearch);
+    refreshProduct = () =>{
+        var list = JSON.parse(localStorage.getItem("listProduct"))
+        this.setState({
+            userData :list
+        });
     }
 
     render() {
@@ -69,6 +89,7 @@ class products extends Component {
                                     name="txtSearch"
                             />
                             <button className="btn btn-search" onClick = {this.searchProduct} >Search</button>
+                            <button className="btn btn-search" onClick = {this.refreshProduct} >refresh</button>
                         </div>
                         {/* <h2>All Products</h2> */}
                         <select>
